@@ -10,9 +10,11 @@
   },
   "dependencies": {
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.4.3"
   },
   "devDependencies": {
+    "@headlessui/react": "^1.7.4",
     "@heroicons/react": "^2.0.13",
     "@tailwindcss/forms": "^0.5.3",
     "@types/react": "^18.0.22",
