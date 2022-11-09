@@ -13,6 +13,8 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@heroicons/react": "^2.0.13",
+    "@tailwindcss/forms": "^0.5.3",
     "@types/react": "^18.0.22",
     "@types/react-dom": "^18.0.7",
     "@vitejs/plugin-react": "^2.2.0",
