@@ -3,6 +3,8 @@ import DefaultLayout from "./components/DefaultLayout.jsx";
 import Dashboard from "./views/Dashboard.jsx";
 import Login from "./views/Login.jsx";
 import Surveys from "./views/Surveys.jsx";
+import GuestLayout from "./components/GuestLayout.jsx";
+import Register from "./views/Register.jsx";
 
 const router = createBrowserRouter([
   {
@@ -24,8 +26,18 @@ const router = createBrowserRouter([
     ]
   },
   {
-    path: '/login',
-    element: <Login />
+    path: '/',
+    element: <GuestLayout />,
+    children: [
+      {
+        path: 'login',
+        element: <Login />
+      },
+      {
+        path: 'register',
+        element: <Register />
+      }
+    ]
   }
 ])
 
