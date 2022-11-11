@@ -1,7 +1,8 @@
 import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import {Outlet} from "react-router-dom";
+import {Navigate, Outlet} from "react-router-dom";
+import {useStateContext} from "../contexts/ContextProvider.jsx";
 
 const user = {
   name: 'Tom Cook',
@@ -27,6 +28,11 @@ function classNames(...classes) {
 }
 
 export default function DefaultLayout() {
+  const state = useStateContext();
+  if (!state.userToken) {
+    return <Navigate to="/login" replace />;
+  }
+
   return (
     <>
       <div className="min-h-full">
