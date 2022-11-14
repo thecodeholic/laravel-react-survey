@@ -1,7 +1,37 @@
 import {LockClosedIcon} from '@heroicons/react/20/solid'
 import {Link} from "react-router-dom";
+import {useState} from "react";
+import axiosClient from "../axios.js";
+import {useStateContext} from "../contexts/ContextProvider.jsx";
 
 export default function Login() {
+  const {setUserToken, setCurrentUser} = useStateContext()
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState({__html: ''});
+
+  function onSubmit(ev) {
+    ev.preventDefault();
+    setError({__html: ''})
+
+    axiosClient.post('/login', {
+      email,
+      password,
+    })
+      .then(({data}) => {
+        setCurrentUser(data.user)
+        setUserToken(data.token)
+      })
+      .catch(({response}) => {
+        if (response.data.error) {
+          setError({__html: response.data.error})
+        } else {
+          const finalErrors = Object.values(response.data.errors).reduce((accum, next) => [...accum, ...next], [])
+          setError({__html: finalErrors.join('<br>')})
+        }
+      })
+  }
+
   return (
     <>
       <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
@@ -13,7 +43,9 @@ export default function Login() {
           register for free
         </Link>
       </p>
-      <form className="mt-8 space-y-6" action="#" method="POST">
+      {error.__html && (<div className="bg-red-500 rounded py-2 px-3 text-white" dangerouslySetInnerHTML={error}>
+      </div>)}
+      <form className="mt-8 space-y-6" action="#" method="POST" onSubmit={onSubmit}>
         <input type="hidden" name="remember" defaultValue="true"/>
         <div className="-space-y-px rounded-md shadow-sm">
           <div>
@@ -25,6 +57,8 @@ export default function Login() {
               name="email"
               type="email"
               autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
               className="relative block w-full appearance-none rounded-none rounded-t-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
               placeholder="Email address"
@@ -39,6 +73,8 @@ export default function Login() {
               name="password"
               type="password"
               autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
               className="relative block w-full appearance-none rounded-none rounded-b-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
               placeholder="Password"
