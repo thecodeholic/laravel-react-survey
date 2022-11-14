@@ -11,11 +11,10 @@ axiosClient.interceptors.request.use(config => {
 })
 
 axiosClient.interceptors.response.use(response => {
-  router.push('/login')
-  return null;
+  return response;
 }, error => {
   if (error.response.status === 401) {
-    router.push('/login')
+    router.navigate('/login')
   } else if (error.response.status === 404) {
     // Show 404
   }
