@@ -1,6 +1,14 @@
 import {Link} from "react-router-dom";
 
-export function TButton({color, to, href, link, children}) {
+export function TButton({
+                          color = 'indigo',
+                          to = '',
+                          circle = false,
+                          href = '',
+                          link = false,
+                          target = "_blank",
+                          children
+                        }) {
 
   let classes = [
     "flex",
@@ -9,10 +17,6 @@ export function TButton({color, to, href, link, children}) {
     "border",
     "border-2",
     "border-transparent",
-    "p-0",
-    "py-2",
-    "px-4",
-    "rounded-md"
   ];
 
   if (link) {
@@ -68,13 +72,35 @@ export function TButton({color, to, href, link, children}) {
         break;
 
     }
-
-    return (
-      <>
-        {href && (<a href={href} className={classes.join(" ")}>{children}</a>)}
-        {to && (<Link to={to} className={classes.join(" ")}>{children}</Link>)}
-        {!to && !href && (<button className={classes.join(" ")}>{children}</button>)}
-      </>
-    )
   }
+
+
+  if (circle) {
+    classes = [
+      ...classes,
+      "h-8",
+      "w-8",
+      "items-center",
+      "justify-center",
+      "rounded-full",
+      "text-sm",
+    ];
+  } else {
+    classes = [
+      ...classes,
+      "p-0",
+      "py-2",
+      "px-4",
+      "rounded-md"
+    ];
+  }
+
+  console.log(circle, link);
+  return (
+    <>
+      {href && (<a href={href} className={classes.join(" ")} target={target}>{children}</a>)}
+      {to && (<Link to={to} className={classes.join(" ")}>{children}</Link>)}
+      {!to && !href && (<button className={classes.join(" ")}>{children}</button>)}
+    </>
+  )
 }
