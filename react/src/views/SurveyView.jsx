@@ -1,6 +1,6 @@
 import PageComponent from "../components/PageComponent.jsx";
-import {useState} from "react";
-import {PhotoIcon} from "@heroicons/react/24/outline/index.js";
+import { useState } from "react";
+import { PhotoIcon } from "@heroicons/react/24/outline/index.js";
 import axiosClient from "../axios.js";
 
 export function SurveyView() {
@@ -13,10 +13,9 @@ export function SurveyView() {
     image_url: null,
     expire_date: "",
     questions: [],
-  })
+  });
 
   function onImageChoose(ev) {
-    debugger;
     const file = ev.target.files[0];
 
     const reader = new FileReader();
@@ -24,9 +23,9 @@ export function SurveyView() {
       // The field to send on backend and apply validations
       setSurvey({
         ...survey,
-        image: reader.result,
+        image: file,
         image_url: reader.result,
-      })
+      });
       // The field to display here
       ev.target.value = "";
     };
@@ -36,31 +35,49 @@ export function SurveyView() {
   function onSubmit(ev) {
     ev.preventDefault();
 
-    axiosClient.post('/survey', survey)
-      .then(res => {
+    const payload = { ...survey };
+    if (payload.image) {
+      payload.image = payload.image_url
+    }
+    delete payload.image_url;
+    axiosClient.post("/survey", payload)
+      .then((res) => {
         console.log(res);
-      })
+      });
   }
 
   return (
-    <PageComponent title={'Create new Survey'}>
-      {survey.image_url}
+    <PageComponent title={"Create new Survey"}>
       <form action="#" method="POST" onSubmit={onSubmit}>
         <div className="shadow sm:overflow-hidden sm:rounded-md">
           <div className="space-y-6 bg-white px-4 py-5 sm:p-6">
             {/*Image*/}
             <div>
-              <label className="block text-sm font-medium text-gray-700">Photo</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Photo
+              </label>
               <div className="mt-1 flex items-center">
-                  <span
-                    className="flex justify-center  items-center text-gray-400 h-12 w-12 overflow-hidden rounded-full bg-gray-100">
-                    <PhotoIcon className="w-8 h-8"/>
+                {survey.image_url && (
+                  <img
+                    src={survey.image_url}
+                    alt=""
+                    className="w-32 h-32 object-cover"
+                  />
+                )}
+                {!survey.image_url && (
+                  <span className="flex justify-center  items-center text-gray-400 h-12 w-12 overflow-hidden rounded-full bg-gray-100">
+                    <PhotoIcon className="w-8 h-8" />
                   </span>
+                )}
                 <button
                   type="button"
                   className="relative ml-5 rounded-md border border-gray-300 bg-white py-2 px-3 text-sm font-medium leading-4 text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
-                  <input type="file" className="absolute left-0 top-0 right-0 bottom-0 opacity-0" onChange={onImageChoose}/>
+                  <input
+                    type="file"
+                    className="absolute left-0 top-0 right-0 bottom-0 opacity-0"
+                    onChange={onImageChoose}
+                  />
                   Change
                 </button>
               </div>
@@ -69,7 +86,10 @@ export function SurveyView() {
 
             {/*Title*/}
             <div className="col-span-6 sm:col-span-3">
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="title"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Survey Title
               </label>
               <input
@@ -77,7 +97,9 @@ export function SurveyView() {
                 name="title"
                 id="title"
                 value={survey.title}
-                onChange={ev => setSurvey({...survey, title: ev.target.value})}
+                onChange={(ev) =>
+                  setSurvey({ ...survey, title: ev.target.value })
+                }
                 placeholder="Survey Title"
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               />
@@ -86,14 +108,19 @@ export function SurveyView() {
 
             {/*Description*/}
             <div className="col-span-6 sm:col-span-3">
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="description"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Description
               </label>
               <textarea
                 name="description"
                 id="description"
                 value={survey.description}
-                onChange={ev => setSurvey({...survey, description: ev.target.value})}
+                onChange={(ev) =>
+                  setSurvey({ ...survey, description: ev.target.value })
+                }
                 placeholder="Describe your survey"
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               ></textarea>
@@ -102,7 +129,10 @@ export function SurveyView() {
 
             {/*Expire Date*/}
             <div className="col-span-6 sm:col-span-3">
-              <label htmlFor="expire_date" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="expire_date"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Expire Date
               </label>
               <input
@@ -110,7 +140,9 @@ export function SurveyView() {
                 name="expire_date"
                 id="expire_date"
                 value={survey.expire_date}
-                onChange={ev => setSurvey({...survey, expire_date: ev.target.value})}
+                onChange={(ev) =>
+                  setSurvey({ ...survey, expire_date: ev.target.value })
+                }
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               />
             </div>
@@ -124,7 +156,9 @@ export function SurveyView() {
                   name="status"
                   type="checkbox"
                   checked={survey.status}
-                  onChange={ev => setSurvey({...survey, status: ev.target.checked})}
+                  onChange={(ev) =>
+                    setSurvey({ ...survey, status: ev.target.checked })
+                  }
                   className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                 />
               </div>
@@ -132,7 +166,9 @@ export function SurveyView() {
                 <label htmlFor="comments" className="font-medium text-gray-700">
                   Active
                 </label>
-                <p className="text-gray-500">Whether to make survey publicly available</p>
+                <p className="text-gray-500">
+                  Whether to make survey publicly available
+                </p>
               </div>
             </div>
             {/*Active*/}
@@ -148,5 +184,5 @@ export function SurveyView() {
         </div>
       </form>
     </PageComponent>
-  )
+  );
 }
