@@ -1,6 +1,6 @@
 import {Link} from "react-router-dom";
 
-export function TButton({
+export default function TButton({
                           color = 'indigo',
                           to = '',
                           circle = false,

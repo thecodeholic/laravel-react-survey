@@ -1,4 +1,4 @@
-import {TButton} from "./core/Tbutton.jsx";
+import TButton from "./core/Tbutton.jsx";
 import {ArrowTopRightOnSquareIcon, PencilIcon, TrashIcon} from "@heroicons/react/24/outline/index.js";
 
 export function SurveyListItem({survey, onClick}) {

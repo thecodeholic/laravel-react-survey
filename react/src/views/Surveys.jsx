@@ -1,8 +1,7 @@
 import PageComponent from "../components/PageComponent.jsx";
 import {useStateContext} from "../contexts/ContextProvider.jsx";
 import {SurveyListItem} from "../components/SurveyListItem.jsx";
-import {TButton} from "../components/core/Tbutton.jsx";
-import {PencilIcon} from "@heroicons/react/20/solid/index.js";
+import TButton from "../components/core/Tbutton.jsx";
 import {PlusCircleIcon} from "@heroicons/react/24/outline/index.js";
 
 const Surveys = () => {
