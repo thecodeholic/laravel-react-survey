@@ -4,6 +4,7 @@ const StateContext = createContext({
   currentUser: {},
   userToken: null,
   surveys: [],
+  questionTypes: [],
   setCurrentUser: () => {
   },
   setUserToken: () => {
@@ -184,6 +185,7 @@ export const ContextProvider = ({children}) => {
   const [surveys, setSurveys] = useState([
     ...tmpSurveys
   ])
+  const [questionTypes] = useState(["text", "select", "radio", "checkbox", "textarea"])
 
   const logout = () => {
     setCurrentUser({})
@@ -206,7 +208,8 @@ export const ContextProvider = ({children}) => {
       setCurrentUser,
       setUserToken,
       logout,
-      surveys
+      surveys,
+      questionTypes
     }}>
       {children}
     </StateContext.Provider>
