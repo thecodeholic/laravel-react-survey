@@ -54,7 +54,6 @@ export default function SurveyQuestions({ survey, onSurveyUpdate }) {
     <>
       <div className="flex justify-between">
         <h3 className="text-2xl font-bold">Questions</h3>
-        <pre>{ JSON.stringify(model, undefined, 2)}</pre>
         <button
           type="button"
           className="flex items-center text-sm py-1 px-4 rounded-sm text-white bg-gray-600 hover:bg-gray-700"
