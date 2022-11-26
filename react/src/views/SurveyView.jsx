@@ -3,8 +3,10 @@ import { useState } from "react";
 import { PhotoIcon } from "@heroicons/react/24/outline/index.js";
 import axiosClient from "../axios.js";
 import SurveyQuestions from "../components/SurveyQuestions.jsx";
+import {useNavigate} from "react-router-dom";
 
 export default function SurveyView() {
+  const navigate = useNavigate();
   const [survey, setSurvey] = useState({
     title: "",
     slug: "",
@@ -44,6 +46,7 @@ export default function SurveyView() {
     axiosClient.post("/survey", payload)
       .then((res) => {
         console.log(res);
+        navigate('/surveys', {replace: true})
       });
   }
 
@@ -53,9 +56,6 @@ export default function SurveyView() {
 
   return (
     <PageComponent title={"Create new Survey"}>
-      <pre>
-        {JSON.stringify(survey, undefined, 2) }
-      </pre>
       <form action="#" method="POST" onSubmit={onSubmit}>
         <div className="shadow sm:overflow-hidden sm:rounded-md">
           <div className="space-y-6 bg-white px-4 py-5 sm:p-6">
