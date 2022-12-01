@@ -2,11 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Survey;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Enum;
 
 class StoreSurveyRequest extends FormRequest
 {
@@ -30,7 +26,7 @@ class StoreSurveyRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function rules()
     {
@@ -44,5 +40,4 @@ class StoreSurveyRequest extends FormRequest
             'questions' => 'array',
         ];
     }
-
 }

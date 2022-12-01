@@ -7,7 +7,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class SurveyQuestionResource extends JsonResource
 {
     /**
-     * Transform the resource collection into an array.
+     * Transform the resource into an array.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
@@ -19,7 +19,7 @@ class SurveyQuestionResource extends JsonResource
             'type' => $this->type,
             'question' => $this->question,
             'description' => $this->description,
-            'data' => json_decode($this->data)
+            'data' => json_decode($this->data),
         ];
     }
 }

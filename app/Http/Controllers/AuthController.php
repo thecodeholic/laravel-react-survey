@@ -48,7 +48,7 @@ class AuthController extends Controller
         ]);
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
         /** @var User $user */
         $user = Auth::user();
@@ -58,5 +58,10 @@ class AuthController extends Controller
         return response([
             'success' => true
         ]);
+    }
+
+    public function me(Request $request)
+    {
+        return $request->user();
     }
 }

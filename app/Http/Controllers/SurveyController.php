@@ -3,21 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Enums\QuestionTypeEnum;
-use App\Http\Requests\StoreSurveyAnswerRequest;
 use App\Http\Resources\SurveyResource;
 use App\Models\Survey;
 use App\Http\Requests\StoreSurveyRequest;
 use App\Http\Requests\UpdateSurveyRequest;
-use App\Models\SurveyAnswer;
 use App\Models\SurveyQuestion;
-use App\Models\SurveyQuestionAnswer;
-use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
+use Symfony\Component\HttpFoundation\Request;
 
 class SurveyController extends Controller
 {
@@ -30,13 +27,17 @@ class SurveyController extends Controller
     {
         $user = $request->user();
 
-        return SurveyResource::collection(Survey::where('user_id', $user->id)->orderBy('created_at', 'DESC')->paginate(10));
+        return SurveyResource::collection(
+            Survey::where('user_id', $user->id)
+                ->orderBy('created_at', 'desc')
+                ->paginate(2)
+        );
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param \App\Http\Requests\StoreSurveyRequest $request
+     * @param  \App\Http\Requests\StoreSurveyRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StoreSurveyRequest $request)
@@ -45,7 +46,7 @@ class SurveyController extends Controller
 
         // Check if image was given and save on local file system
         if (isset($data['image'])) {
-            $relativePath  = $this->saveImage($data['image']);
+            $relativePath = $this->saveImage($data['image']);
             $data['image'] = $relativePath;
         }
 
@@ -63,45 +64,23 @@ class SurveyController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param \App\Models\Survey $survey
+     * @param  \App\Models\Survey  $survey
      * @return \Illuminate\Http\Response
      */
     public function show(Survey $survey, Request $request)
     {
         $user = $request->user();
         if ($user->id !== $survey->user_id) {
-            return abort(403, 'Unauthorized action.');
+            return abort(403, 'Unauthorized action');
         }
-
-        return new SurveyResource($survey);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param \App\Models\Survey $survey
-     * @return \Illuminate\Http\Response
-     */
-    public function showForGuest(Survey $survey)
-    {
-        if (!$survey->status) {
-            return response("", 404);
-        }
-
-        $currentDate = new \DateTime();
-        $expireDate = new \DateTime($survey->expire_date);
-        if ($currentDate > $expireDate) {
-            return response("", 404);
-        }
-
         return new SurveyResource($survey);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param \App\Http\Requests\UpdateSurveyRequest $request
-     * @param \App\Models\Survey                     $survey
+     * @param  \App\Http\Requests\UpdateSurveyRequest  $request
+     * @param  \App\Models\Survey  $survey
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateSurveyRequest $request, Survey $survey)
@@ -157,7 +136,7 @@ class SurveyController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Models\Survey $survey
+     * @param  \App\Models\Survey  $survey
      * @return \Illuminate\Http\Response
      */
     public function destroy(Survey $survey, Request $request)
@@ -178,84 +157,6 @@ class SurveyController extends Controller
         return response('', 204);
     }
 
-    public function storeAnswer(StoreSurveyAnswerRequest $request, Survey $survey)
-    {
-        $validated = $request->validated();
-//        var_dump($validated, $survey);
-
-        $surveyAnswer = SurveyAnswer::create([
-            'survey_id' => $survey->id,
-            'start_date' => date('Y-m-d H:i:s'),
-            'end_date' => date('Y-m-d H:i:s'),
-        ]);
-
-        foreach ($validated['answers'] as $questionId => $answer) {
-            $question = SurveyQuestion::where(['id' => $questionId, 'survey_id' => $survey->id])->get();
-            if (!$question) {
-                return response("Invalid question ID: \"$questionId\"", 400);
-            }
-
-            $data = [
-                'survey_question_id' => $questionId,
-                'survey_answer_id' => $surveyAnswer->id,
-                'answer' => is_array($answer) ? json_encode($answer) : $answer
-            ];
-
-            $questionAnswer = SurveyQuestionAnswer::create($data);
-        }
-
-        return response("", 201);
-
-    }
-
-    /**
-     * Create a question and return
-     *
-     * @param $data
-     * @return mixed
-     * @throws \Illuminate\Validation\ValidationException
-     * @author Zura Sekhniashvili <zurasekhniashvili@gmail.com>
-     */
-    private function createQuestion($data)
-    {
-        if (is_array($data['data'])) {
-            $data['data'] = json_encode($data['data']);
-        }
-        $validator = Validator::make($data, [
-            'question' => 'required|string',
-            'type' => ['required',  new Enum(QuestionTypeEnum::class)],
-            'description' => 'nullable|string',
-            'data' => 'present',
-            'survey_id' => 'exists:App\Models\Survey,id'
-        ]);
-
-        return SurveyQuestion::create($validator->validated());
-    }
-
-    /**
-     * Update a question and return true or false
-     *
-     * @param \App\Models\SurveyQuestion $question
-     * @param                            $data
-     * @return bool
-     * @throws \Illuminate\Validation\ValidationException
-     * @author Zura Sekhniashvili <zurasekhniashvili@gmail.com>
-     */
-    private function updateQuestion(SurveyQuestion $question, $data)
-    {
-        if (is_array($data['data'])) {
-            $data['data'] = json_encode($data['data']);
-        }
-        $validator = Validator::make($data, [
-            'id' => 'exists:App\Models\SurveyQuestion,id',
-            'question' => 'required|string',
-            'type' => ['required', new Enum(QuestionTypeEnum::class)],
-            'description' => 'nullable|string',
-            'data' => 'present',
-        ]);
-
-        return $question->update($validator->validated());
-    }
 
     /**
      * Save image in local file system and return saved image path
@@ -299,10 +200,69 @@ class SurveyController extends Controller
         return $relativePath;
     }
 
-    public function createQuestionAnswer($data)
+    /**
+     * Create a question and return
+     *
+     * @param $data
+     * @return mixed
+     * @throws \Illuminate\Validation\ValidationException
+     * @author Zura Sekhniashvili <zurasekhniashvili@gmail.com>
+     */
+    private function createQuestion($data)
     {
-        if (is_array($data['answer'])) {
-            $data['answer'] = json_encode($data['answer']);
+        if (is_array($data['data'])) {
+            $data['data'] = json_encode($data['data']);
         }
+        $validator = Validator::make($data, [
+            'question' => 'required|string',
+            'type' => [
+                'required', new Enum(QuestionTypeEnum::class)
+            ],
+            'description' => 'nullable|string',
+            'data' => 'present',
+            'survey_id' => 'exists:App\Models\Survey,id'
+        ]);
+
+        return SurveyQuestion::create($validator->validated());
+    }
+
+    /**
+     * Update a question and return true or false
+     *
+     * @param \App\Models\SurveyQuestion $question
+     * @param                            $data
+     * @return bool
+     * @throws \Illuminate\Validation\ValidationException
+     * @author Zura Sekhniashvili <zurasekhniashvili@gmail.com>
+     */
+    private function updateQuestion(SurveyQuestion $question, $data)
+    {
+        if (is_array($data['data'])) {
+            $data['data'] = json_encode($data['data']);
+        }
+        $validator = Validator::make($data, [
+            'id' => 'exists:App\Models\SurveyQuestion,id',
+            'question' => 'required|string',
+            'type' => ['required', new Enum(QuestionTypeEnum::class)],
+            'description' => 'nullable|string',
+            'data' => 'present',
+        ]);
+
+        return $question->update($validator->validated());
+    }
+
+    public function getBySlug(Survey $survey)
+    {
+        if (!$survey->status) {
+            return response("", 404);
+        }
+
+        $currentDate = new \DateTime();
+        $expireDate = new \DateTime($survey->expire_date);
+        if ($currentDate > $expireDate) {
+            return response("", 404);
+        }
+
+        return new SurveyResource($survey);
     }
 }

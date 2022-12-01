@@ -1,11 +1,9 @@
-import PageComponent from "../components/PageComponent.jsx";
+import PageComponent from "../components/PageComponent";
 
-const Dashboard = () => {
+export default function Dashboard() {
   return (
-    <PageComponent title='Dashboard'>
-      Dashboard
+    <PageComponent title="Dashboard">
+      Children
     </PageComponent>
-  )
+  );
 }
-
-export default Dashboard

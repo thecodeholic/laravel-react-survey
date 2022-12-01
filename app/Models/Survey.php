@@ -9,11 +9,15 @@ use Spatie\Sluggable\SlugOptions;
 
 class Survey extends Model
 {
-    use HasFactory, HasSlug;
+    use HasFactory;
+    use HasSlug;
 
-    protected $fillable = ['user_id', 'image', 'title', 'slug', 'status', 'description', 'expire_date'];
+    protected $fillable = ['title', 'description', 'expire_date', 'image', 'user_id', 'status', 'created_at', 'updated_at'];
 
-    public function getSlugOptions(): SlugOptions
+    /**
+     * Get the options for generating the slug.
+     */
+    public function getSlugOptions() : SlugOptions
     {
         return SlugOptions::create()
             ->generateSlugsFrom('title')
@@ -23,10 +27,5 @@ class Survey extends Model
     public function questions()
     {
         return $this->hasMany(SurveyQuestion::class);
-    }
-
-    public function answers()
-    {
-        return $this->hasMany(SurveyAnswer::class);
     }
 }

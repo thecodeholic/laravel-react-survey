@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Survey;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateSurveyRequest extends FormRequest
@@ -15,6 +14,7 @@ class UpdateSurveyRequest extends FormRequest
     public function authorize()
     {
         $survey = $this->route('survey');
+
         if ($this->user()->id !== $survey->user_id) {
             return false;
         }
@@ -24,7 +24,7 @@ class UpdateSurveyRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function rules()
     {
@@ -34,7 +34,7 @@ class UpdateSurveyRequest extends FormRequest
             'user_id' => 'exists:users,id',
             'status' => 'required|boolean',
             'description' => 'nullable|string',
-            'expire_date' => 'nullable|date|after:tomorrow',
+            'expire_date' => 'nullable|date|after:today',
             'questions' => 'array'
         ];
     }
