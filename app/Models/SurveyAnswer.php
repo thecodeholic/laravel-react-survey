@@ -14,7 +14,7 @@ class SurveyAnswer extends Model
 
     protected $fillable = ['survey_id', 'start_date', 'end_date'];
 
-    public function belongsTo()
+    public function survey()
     {
         return $this->belongsTo(Survey::class);
     }
